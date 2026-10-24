@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#4c36a8">
+<meta name="description" content="Find and share captions in English, Bengali, and Hindi with CaptionCraft.">
+<title>CaptionCraft — Captions & Hashtags</title>
+<style>
+:root{--purple:#4c36a8;--purple2:#6e56cf;--ink:#29213d;--muted:#716b82;--paper:#f8f7ff;--line:#e6e0f3;--white:#fff}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--paper);color:var(--ink)}
+header{background:linear-gradient(135deg,#3e2a94,#765de0);color:white;padding:25px 18px 30px}
+.wrap{width:min(900px,100% - 28px);margin:auto}.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:14px;background:white;color:var(--purple);display:grid;place-items:center;font-size:25px;font-weight:800}.brand h1{font-size:1.35rem;margin:0}.brand p{margin:3px 0 0;color:#e7e1ff;font-size:.85rem}
+.hero h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:1.15;margin:28px 0 8px}.hero p{margin:0 0 20px;color:#e7e1ff}.searchbar{display:flex;gap:8px}.searchbar input{flex:1;min-width:0;border:0;border-radius:12px;padding:14px 15px;font:inherit;outline:2px solid transparent}.searchbar input:focus{outline-color:#c6baff}
+.controls{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:13px;flex-wrap:wrap}.languages{display:flex;gap:5px;background:#382584;padding:4px;border-radius:12px}.languages button{border:0;background:transparent;color:#eee8ff;padding:8px 12px;border-radius:9px;cursor:pointer;font-weight:650}.languages button.active{background:white;color:var(--purple)}.smallbtn{border:1px solid #cfc5ed;background:#fff;color:var(--purple);border-radius:10px;padding:9px 12px;cursor:pointer;font:inherit;font-weight:650}
+main{padding:24px 0 45px}.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:5px 0 14px}.sectionhead h3{margin:0;font-size:1.12rem}.muted{color:var(--muted);font-size:.88rem}
+.categories{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:23px}.chip{border:1px solid var(--line);background:#eeeaf9;color:#493a79;border-radius:99px;padding:9px 13px;cursor:pointer;font:inherit;font-size:.88rem}.chip.active{background:var(--purple);color:white;border-color:var(--purple)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.card{background:white;border:1px solid var(--line);border-radius:17px;padding:16px;display:flex;flex-direction:column;min-height:190px;box-shadow:0 3px 14px #35227a08}.cardtop{display:flex;align-items:center;justify-content:space-between;gap:8px}.tag{font-size:.75rem;color:#5944a3;background:#f0ecff;border-radius:99px;padding:5px 9px}.save{border:0;background:transparent;color:#6b58b6;font-size:1.25rem;cursor:pointer}.quote{font-size:1.05rem;line-height:1.55;margin:18px 0 22px;flex:1;overflow-wrap:anywhere}.actions{display:flex;gap:8px}.actions button{flex:1;border:1px solid #d9d0f1;border-radius:10px;background:white;color:var(--purple);padding:10px 8px;font:inherit;font-size:.84rem;font-weight:700;cursor:pointer}.actions .primary{background:var(--purple);color:white;border-color:var(--purple)}button:hover{filter:brightness(.97)}button:focus-visible{outline:3px solid #b7a8ff;outline-offset:2px}.empty{background:white;border:1px dashed #cfc5ed;border-radius:16px;padding:35px 18px;text-align:center;color:var(--muted);grid-column:1/-1}
+footer{border-top:1px solid var(--line);padding:20px 0 28px;color:var(--muted);font-size:.82rem;text-align:center}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#251b48;color:white;padding:11px 16px;border-radius:12px;box-shadow:0 6px 25px #0002;display:none;max-width:90%;z-index:3}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.card{min-height:165px}.wrap{width:min(100% - 22px,900px)}header{padding-top:20px}.quote{margin:14px 0 18px}.hero h2{margin-top:23px}.controls{align-items:flex-start}.languages button{padding:8px 10px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="wrap">
+  <div class="brand"><div class="logo">✦</div><div><h1>CaptionCraft</h1><p>Create. Copy. Share.</p></div></div>
+  <div class="hero"><h2 id="headline">Find words that fit your mood.</h2><p id="subhead">Captions for every moment, in your language.</p></div>
+  <div class="searchbar"><input id="search" type="search" placeholder="Search captions or categories..." aria-label="Search captions"></div>
+  <div class="controls">
+   <div class="languages" role="group" aria-label="Language">
+    <button class="active" data-lang="en">English</button><button data-lang="bn">বাংলা</button><button data-lang="hi">हिन्दी</button>
+   </div>
+   <button class="smallbtn" id="savedToggle">♡ <span id="savedLabel">Saved captions</span> (<span id="savedCount">0</span>)</button>
+  </div>
+ </div>
+</header>
+<main class="wrap">
+ <div class="sectionhead"><h3 id="catTitle">Explore categories</h3><span class="muted" id="resultCount"></span></div>
+ <div class="categories" id="categories"></div>
+ <div class="sectionhead"><h3 id="listTitle">Captions for you</h3><span class="muted" id="hint">Tap copy to use a caption</span></div>
+ <div class="grid" id="cards"></div>
+</main>
+<footer><div class="wrap">CaptionCraft · A simple caption companion · Keep creating ✨</div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const copy = {
+ en:{headline:"Find words that fit your mood.",subhead:"Captions for every moment, in your language.",search:"Search captions or categories...",categories:"Explore categories",list:"Captions for you",hint:"Tap copy to use a caption",saved:"Saved captions",all:"All",copy:"Copy",share:"Share",empty:"No captions found. Try another search.",copied:"Caption copied!",shared:"Share menu opened.",savedTitle:"Your saved captions"},
+ bn:{headline:"আপনার অনুভূতির জন্য খুঁজে নিন সঠিক কথা।",subhead:"প্রতিটি মুহূর্তের জন্য ক্যাপশন—আপনার ভাষায়।",search:"ক্যাপশন বা ক্যাটাগরি খুঁজুন...",categories:"ক্যাটাগরি দেখুন",list:"আপনার জন্য ক্যাপশন",hint:"ব্যবহার করতে কপি করুন",saved:"প্রিয় ক্যাপশন",all:"সব",copy:"কপি",share:"শেয়ার",empty:"কোনো ক্যাপশন পাওয়া যায়নি। অন্য কিছু লিখে খুঁজুন।",copied:"ক্যাপশন কপি হয়েছে!",shared:"শেয়ার মেনু খোলা হয়েছে।",savedTitle:"আপনার প্রিয় ক্যাপশন"},
+ hi:{headline:"अपने मूड के लिए सही शब्द खोजें।",subhead:"हर पल के लिए कैप्शन—आपकी भाषा में।",search:"कैप्शन या श्रेणी खोजें...",categories:"श्रेणियाँ देखें",list:"आपके लिए कैप्शन",hint:"इस्तेमाल करने के लिए कॉपी करें",saved:"पसंदीदा कैप्शन",all:"सभी",copy:"कॉपी",share:"शेयर",empty:"कोई कैप्शन नहीं मिला। कुछ और खोजें।",copied:"कैप्शन कॉपी हो गया!",shared:"शेयर मेनू खुल गया।",savedTitle:"आपके पसंदीदा कैप्शन"}
+};
+const catNames={
+ Motivation:{en:"Motivation",bn:"অনুপ্রেরণা",hi:"प्रेरणा"},Love:{en:"Love",bn:"ভালোবাসা",hi:"प्यार"},Sad:{en:"Sad",bn:"কষ্ট",hi:"उदासी"},Friendship:{en:"Friendship",bn:"বন্ধুত্ব",hi:"दोस्ती"},Business:{en:"Business",bn:"ব্যবসা",hi:"व्यवसाय"},Birthday:{en:"Birthday",bn:"জন্মদিন",hi:"जन्मदिन"},Lifestyle:{en:"Lifestyle",bn:"জীবনধারা",hi:"जीवनशैली"},Success:{en:"Success",bn:"সাফল্য",hi:"सफलता"}
+};
+const data=[
+[1,"Motivation","Small steps every day lead to big changes.","প্রতিদিনের ছোট ছোট পদক্ষেপই বড় পরিবর্তন আনে।","हर दिन के छोटे कदम बड़े बदलाव लाते हैं।"],
+[2,"Love","You make ordinary moments feel magical.","তুমি সাধারণ মুহূর্তগুলোকে জাদুকরী করে তোলো।","तुम आम पलों को भी खास बना देते हो।"],
+[3,"Sad","Sometimes silence says what words cannot.","কখনো কখনো নীরবতা সেই কথাই বলে, যা শব্দ পারে না।","कभी-कभी खामोशी वह कहती है जो शब्द नहीं कह पाते।"],
+[4,"Friendship","Good friends make every journey brighter.","ভালো বন্ধুরা প্রতিটি পথকে আরও সুন্দর করে তোলে।","अच्छे दोस्त हर सफर को खूबसूरत बना देते हैं।"],
+[5,"Business","Build with purpose. Grow with patience.","লক্ষ্য নিয়ে শুরু করুন, ধৈর্য ধরে এগিয়ে যান।","मकसद के साथ शुरुआत करें, धैर्य से आगे बढ़ें।"],
+[6,"Birthday","A new year of life, a new chapter of dreams.","জীবনের নতুন বছর, স্বপ্নের নতুন অধ্যায়।","ज़िंदगी का नया साल, सपनों का नया अध्याय।"],
+[7,"Love","The best memories are made together.","সেরা স্মৃতিগুলো একসঙ্গে তৈরি হয়।","सबसे खूबसूरत यादें साथ मिलकर बनती हैं।"],
+[8,"Motivation","Believe in your progress, even when it feels slow.","এগিয়ে যাওয়া ধীর মনে হলেও নিজের অগ্রগতিতে বিশ্বাস রাখুন।","रफ्तार धीमी लगे, फिर भी अपनी प्रगति पर भरोसा रखें।"],
+[9,"Sad","Healing takes time. Be gentle with yourself.","সেরে উঠতে সময় লাগে। নিজের প্রতি সদয় হোন।","संभलने में समय लगता है। खुद के प्रति नरम रहें।"],
+[10,"Friendship","Life is better with people who understand you.","যারা আপনাকে বোঝে, তাদের সঙ্গে জীবন আরও সুন্দর।","जो आपको समझते हैं, उनके साथ ज़िंदगी बेहतर होती है।"],
+[11,"Business","Your next customer could be one post away.","আপনার পরবর্তী গ্রাহক হয়তো মাত্র একটি পোস্ট দূরে।","आपका अगला ग्राहक शायद बस एक पोस्ट दूर है।"],
+[12,"Birthday","May this year bring joy, courage, and new beginnings.","নতুন বছর বয়ে আনুক আনন্দ, সাহস আর নতুন সূচনা।","यह साल खुशियाँ, हिम्मत और नई शुरुआत लाए।"],
+[13,"Lifestyle","Make room for what makes you feel alive.","যা আপনাকে প্রাণবন্ত করে, তার জন্য সময় রাখুন।","जो आपको जीवंत महसूस कराए, उसके लिए समय निकालें।"],
+[14,"Success","Consistency turns effort into achievement.","নিয়মিত চেষ্টাই পরিশ্রমকে সাফল্যে রূপ দেয়।","निरंतर प्रयास मेहनत को सफलता में बदलता है।"],
+[15,"Motivation","Your only limit may be the one you believe in.","আপনার সীমা হয়তো সেটাই, যা আপনি নিজেই বিশ্বাস করেন।","आपकी सीमा शायद वही है, जिस पर आप विश्वास करते हैं।"],
+[16,"Love","Home is wherever I can be myself with you.","তোমার সঙ্গে যেখানে নিজের মতো থাকা যায়, সেটাই আমার ঘর।","जहाँ तुम्हारे साथ मैं खुद रह सकूँ, वही मेरा घर है।"],
+[17,"Sad","Not every goodbye comes with an explanation.","প্রতিটি বিদায়ের সঙ্গে ব্যাখ্যা থাকে না।","हर अलविदा के साथ कोई वजह नहीं होती।"],
+[18,"Friendship","Different paths, one unforgettable friendship.","পথ আলাদা, কিন্তু বন্ধুত্ব অমলিন।","रास्ते अलग, लेकिन दोस्ती हमेशा खास।"],
+[19,"Business","Solve a real problem, and value will follow.","বাস্তব সমস্যার সমাধান করুন, মূল্য নিজেই তৈরি হবে।","असली समस्या हल करें, मूल्य अपने आप बनेगा।"],
+[20,"Birthday","Celebrate how far you have come.","কতটা পথ পেরিয়েছেন, সেটাও উদযাপন করুন।","आपने कितना सफर तय किया है, उसका जश्न मनाएँ।"],
+[21,"Lifestyle","Protect your peace like it matters—because it does.","নিজের মানসিক শান্তিকে গুরুত্ব দিন—কারণ এটি সত্যিই গুরুত্বপূর্ণ।","अपने सुकून की रक्षा करें—क्योंकि यह सच में ज़रूरी है।"],
+[22,"Success","Progress is still progress, no matter the pace.","গতি যেমনই হোক, অগ্রগতি মানেই অগ্রগতি।","रफ्तार कैसी भी हो, प्रगति तो प्रगति है।"],
+[23,"Motivation","Start where you are. Use what you have.","যেখানে আছেন সেখান থেকেই শুরু করুন, যা আছে তা কাজে লাগান।","जहाँ हैं वहीं से शुरू करें, जो है उसका उपयोग करें।"],
+[24,"Love","A kind heart is always in style.","একটি সুন্দর মন কখনো পুরোনো হয় না।","एक अच्छा दिल हमेशा खूबसूरत होता है।"],
+[25,"Sad","Some chapters end so better ones can begin.","কিছু অধ্যায় শেষ হয়, যাতে আরও সুন্দর অধ্যায় শুরু হতে পারে।","कुछ अध्याय खत्म होते हैं ताकि बेहतर शुरुआत हो सके।"],
+[26,"Friendship","Real friendship makes distance feel smaller.","সত্যিকারের বন্ধুত্ব দূরত্বকেও ছোট করে দেয়।","सच्ची दोस्ती दूरियों को भी छोटा कर देती है।"],
+[27,"Business","Learn, improve, repeat. That's how businesses grow.","শিখুন, উন্নতি করুন, আবার চেষ্টা করুন—এভাবেই ব্যবসা বাড়ে।","सीखें, सुधारें, दोहराएँ—इसी तरह कारोबार बढ़ता है।"],
+[28,"Birthday","More laughter, more memories, more life.","আরও হাসি, আরও স্মৃতি, আরও সুন্দর জীবন।","और हँसी, और यादें, और खूबसूरत ज़िंदगी।"],
+[29,"Lifestyle","Less comparison, more appreciation.","তুলনা কম, কৃতজ্ঞতা বেশি।","तुलना कम, सराहना ज़्यादा।"],
+[30,"Success","Keep showing up for the future you want.","যে ভবিষ্যৎ চান, তার জন্য চেষ্টা চালিয়ে যান।","जिस भविष्य की चाह है, उसके लिए लगातार प्रयास करें।"]
+];
+let lang="en",category="All",showSaved=false,query="",saved=new Set();
+try{saved=new Set(JSON.parse(localStorage.getItem("cc-saved")||"[]"))}catch(e){}
+const $=id=>document.getElementById(id);
+function notify(message){$("toast").textContent=message;$("toast").style.display="block";clearTimeout(notify.timer);notify.timer=setTimeout(()=>$("toast").style.display="none",2100)}
+function persist(){try{localStorage.setItem("cc-saved",JSON.stringify([...saved]))}catch(e){}}
+function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function categories(){
+ const t=copy[lang];let cats=["All",...Object.keys(catNames)];
+ $("categories").innerHTML=cats.map(c=>`<button class="chip ${category===c?"active":""}" data-cat="${c}">${c==="All"?t.all:catNames[c][lang]}</button>`).join("");
+ $("categories").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{category=b.dataset.cat;showSaved=false;render()}));
+}
+function render(){
+ const t=copy[lang];$("headline").textContent=t.headline;$("subhead").textContent=t.subhead;$("search").placeholder=t.search;$("catTitle").textContent=t.categories;$("listTitle").textContent=showSaved?t.savedTitle:t.list;$("hint").textContent=t.hint;$("savedLabel").textContent=t.saved;$("savedCount").textContent=saved.size;
+ document.querySelectorAll("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));
+ categories();
+ const idx={en:2,bn:3,hi:4}[lang], q=query.trim().toLocaleLowerCase();
+ const filtered=data.filter(row=>(category==="All"||row[1]===category)&&(!showSaved||saved.has(row[0]))&&(!q||(row[idx]+" "+row[1]+" "+catNames[row[1]][lang]).toLocaleLowerCase().includes(q)));
+ $("resultCount").textContent=filtered.length;
+ $("cards").innerHTML=filtered.length?filtered.map(row=>`<article class="card"><div class="cardtop"><span class="tag">${catNames[row[1]][lang]}</span><button class="save" data-save="${row[0]}" aria-label="Save caption">${saved.has(row[0])?"♥":"♡"}</button></div><p class="quote">${esc(row[idx])}</p><div class="actions"><button data-copy="${row[0]}">${t.copy}</button><button class="primary" data-share="${row[0]}">${t.share}</button></div></article>`).join(""):`<div class="empty">${t.empty}</div>`;
+ $("cards").querySelectorAll("[data-save]").forEach(b=>b.addEventListener("click",()=>{let id=+b.dataset.save;saved.has(id)?saved.delete(id):saved.add(id);persist();render()}));
+ $("cards").querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",async()=>{let row=data.find(r=>r[0]===+b.dataset.copy);await copyText(row[idx]);notify(t.copied)}));
+ $("cards").querySelectorAll("[data-share]").forEach(b=>b.addEventListener("click",async()=>{let row=data.find(r=>r[0]===+b.dataset.share);try{if(navigator.share){await navigator.share({text:row[idx]});}else{await copyText(row[idx]);notify(t.copied)}}catch(e){} }));
+}
+async function copyText(text){try{await navigator.clipboard.writeText(text)}catch(e){let ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove()}}
+document.querySelectorAll("[data-lang]").forEach(b=>b.addEventListener("click",()=>{lang=b.dataset.lang;render()}));
+$("search").addEventListener("input",e=>{query=e.target.value;render()});
+$("savedToggle").addEventListener("click",()=>{showSaved=!showSaved;render()});
+render();
+</script>
+</body>
+</html>
